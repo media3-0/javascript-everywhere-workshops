@@ -6,55 +6,39 @@ class Person extends Component {
   }
 }
 
-fetch("/api/poslowie")
-  .then(function(response) {
-    return response.json();
-  })
-  .then(function(data) {
-    console.log("data", data);
-  });
-
 class App extends Component {
   constructor() {
     super();
 
     this.state = {
-      selectedPersonNumber: -1
+      data: []
     };
   }
 
-  render() {
-    const data = [
-      "Jan Nowak",
-      "Adam Nowak",
-      "Ewa Nowak",
-      "Andrzej Nowak",
-      "Józef Nowak"
-    ];
-
-    const onClickPerson = index => {
-      this.setState({
-        selectedPersonNumber: index
+  componentDidMount() {
+    fetch("/api/poslowie")
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        this.setState({ data: data });
       });
-    };
+  }
 
-    const personsToRender = data.map((person, index) => {
-      const isPersonSelected = index == this.state.selectedPersonNumber;
+  render() {
+    const personsToRender = this.state.data.map((d, index) => {
+      const name = d.data["ludzie.nazwa"];
 
       return (
-        <div onClick={() => onClickPerson(index)}>
-          <Person name={person} />
-          {isPersonSelected ? " X" : ""}
+        <div>
+          <Person name={name} />
         </div>
       );
     });
 
-    return (
-      <div className="wrapper">
-        selected person: {this.state.selectedPersonNumber}
-        {personsToRender}
-      </div>
-    );
+    return <div className="wrapper">
+      {personsToRender}
+    </div>;
   }
 }
 
