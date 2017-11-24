@@ -6,6 +6,14 @@ class Person extends Component {
   }
 }
 
+fetch("/api/poslowie")
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(data) {
+    console.log("data", data);
+  });
+
 class App extends Component {
   constructor() {
     super();
