@@ -21,8 +21,7 @@ class Club extends Component {
 
     return (
       <div>
-        <h3>{this.props.clubName}</h3>
-        {personsToRender}
+        <h4>{this.props.clubName}</h4>
       </div>
     );
   }
@@ -33,6 +32,7 @@ class App extends Component {
     super();
 
     this.state = {
+      activeClubName: undefined,
       data: []
     };
   }
@@ -55,17 +55,49 @@ class App extends Component {
 
     const clubs = _.uniq(allClubs);
 
-    const clubsToRender = clubs.map(clubName => {
-      const peopleInClub = this.state.data.filter(d => {
+    function getPeopleMatchingClub(peopleList, clubName) {
+      return peopleList.filter(d => {
         const isPersonInClub = d.data["sejm_kluby.nazwa"] === clubName;
-
         return isPersonInClub;
       });
+    }
 
-      return <Club clubName={clubName} peopleInClub={peopleInClub} />;
+    const clubsToRender = clubs.map(clubName => {
+      const peopleInClub = getPeopleMatchingClub(this.state.data, clubName);
+
+      return (
+        <div
+          onClick={() => {
+            this.setState({ activeClubName: clubName });
+          }}
+        >
+          <Club clubName={clubName} peopleInClub={peopleInClub} />
+        </div>
+      );
     });
 
-    return <div className="wrapper">{clubsToRender}</div>;
+    const activeClubNamePeople = getPeopleMatchingClub(
+      this.state.data,
+      this.state.activeClubName
+    );
+
+    const activeClubNamePeopleToRender = activeClubNamePeople.map(d => {
+      const name = d.data["ludzie.nazwa"];
+
+      return (
+        <div>
+          <Person name={name} />
+        </div>
+      );
+    });
+
+    return (
+      <div className="wrapper">
+        {clubsToRender}
+        <hr />
+        {activeClubNamePeopleToRender}
+      </div>
+    );
   }
 }
 
