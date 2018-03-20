@@ -1,25 +1,9 @@
 import React, { Component } from "react";
 import _ from "lodash";
 
-const KEYS = [
-  "poslowie.liczba_glosow",
-  "poslowie.liczba_glosowan",
-  "poslowie.liczba_glosowan_opuszczonych",
-  "poslowie.liczba_glosowan_zbuntowanych",
-  "poslowie.liczba_interpelacji",
-  "poslowie.liczba_komisji",
-  "poslowie.liczba_podkomisji",
-  "poslowie.liczba_projektow_uchwal",
-  "poslowie.liczba_projektow_ustaw",
-  "poslowie.liczba_przejazdow",
-  "poslowie.liczba_przelotow",
-  "poslowie.liczba_slow",
-  "poslowie.liczba_uchwal_komisji_etyki",
-  "poslowie.liczba_wnioskow",
-  "poslowie.liczba_wyjazdow",
-  "poslowie.liczba_wypowiedzi",
-  "poslowie.procent_glosow"
-];
+import SortingDropdown from "./SortingDropdown";
+import ClubVisuals from "./ClubVisuals";
+import { SORTING_KEYS } from "./consts";
 
 const CHART_WIDTH = 400;
 const CHART_HEIGHT = 10;
@@ -57,9 +41,10 @@ class App extends Component {
     super();
 
     this.state = {
-      activeSortingKey: KEYS[0],
+      activeSortingKey: SORTING_KEYS[0],
       activeClubName: undefined,
-      data: []
+      data: [],
+      visuals: []
     };
   }
 
@@ -105,6 +90,13 @@ class App extends Component {
       this.state.activeClubName
     );
 
+    const peopleInClubs = clubs.map(clubName => {
+      return {
+        clubName: clubName,
+        people: getPeopleMatchingClub(this.state.data, clubName)
+      };
+    });
+
     const sortedActiveClubNamePeople = _.sortBy(
       activeClubNamePeople,
       d => d.data[this.state.activeSortingKey]
@@ -129,8 +121,32 @@ class App extends Component {
       );
     });
 
-    const keyOptions = KEYS.map(key => {
-      return <option value={key}>{key}</option>;
+    const clubVisualsToRender = this.state.visuals.map((visualKey, i) => {
+      return (
+        <div key={visualKey}>
+          <ClubVisuals
+            peopleInClubs={peopleInClubs}
+            activeKey={visualKey}
+            setVisKey={key => {
+              const newVisuals = this.state.visuals;
+              newVisuals[i] = key;
+
+              this.setState({ visuals: newVisuals });
+            }}
+          />
+          <button
+            onClick={() => {
+              const newVisuals = this.state.visuals.filter((d, j) => {
+                return i !== j;
+              });
+
+              this.setState({ visuals: newVisuals });
+            }}
+          >
+            remove
+          </button>
+        </div>
+      );
     });
 
     return (
@@ -139,13 +155,25 @@ class App extends Component {
 
         <hr />
 
-        <select
-          onChange={event => {
-            this.setState({ activeSortingKey: event.target.value });
+        {clubVisualsToRender}
+
+        <button
+          onClick={() => {
+            const newVisuals = this.state.visuals.concat([SORTING_KEYS[0]]);
+            this.setState({ visuals: newVisuals });
           }}
         >
-          {keyOptions}
-        </select>
+          add new vis
+        </button>
+
+        <hr />
+
+        <SortingDropdown
+          value={this.state.activeSortingKey}
+          onSelect={key => {
+            this.setState({ activeSortingKey: key });
+          }}
+        />
 
         {activeClubNamePeopleToRender}
       </div>

@@ -1,0 +1,19 @@
+export const SORTING_KEYS = [
+  "poslowie.liczba_glosow",
+  "poslowie.liczba_glosowan",
+  "poslowie.liczba_glosowan_opuszczonych",
+  "poslowie.liczba_glosowan_zbuntowanych",
+  "poslowie.liczba_interpelacji",
+  "poslowie.liczba_komisji",
+  "poslowie.liczba_podkomisji",
+  "poslowie.liczba_projektow_uchwal",
+  "poslowie.liczba_projektow_ustaw",
+  "poslowie.liczba_przejazdow",
+  "poslowie.liczba_przelotow",
+  "poslowie.liczba_slow",
+  "poslowie.liczba_uchwal_komisji_etyki",
+  "poslowie.liczba_wnioskow",
+  "poslowie.liczba_wyjazdow",
+  "poslowie.liczba_wypowiedzi",
+  "poslowie.procent_glosow"
+];
